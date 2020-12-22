@@ -9,14 +9,19 @@ RUN npm config set unsafe-perm true
 
 RUN npm install -g npm@latest
 
+RUN apk add yarn
+
 WORKDIR /app
 
 COPY ./app/package*.json ./
 
-RUN npm ci
+RUN yarn install
 
-COPY ./bin/cronjobs /etc/crontabs/root
+COPY ./app ./
 
-RUN ["chmod", "+x", "./bin/entrypoint.sh", "./bin/frontend_builder.sh"]
+RUN ["yarn", "build"]
 
-ENTRYPOINT [ "./bin/entrypoint.sh" ]
+EXPOSE 8080
+
+ENTRYPOINT ["yarn", "serve"]
+
